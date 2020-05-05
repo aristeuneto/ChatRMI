@@ -33,7 +33,7 @@ public class ViewChat extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         try {
             jtaMural.append("Seja Bem-vindo ao chat! \n\n");
-            chat = (ServidorChat) Naming.lookup("rmi://192.168.0.112:1098/ServidorChat");
+            chat = (ServidorChat) Naming.lookup("rmi://"+chat.ipServidor()+":1098/ServidorChat");
             chat.lerMensagem();
 
         } catch (Exception ex) {
@@ -139,7 +139,7 @@ public class ViewChat extends javax.swing.JFrame {
 
         final ServidorChat chat;
         try {
-            chat = (ServidorChat) Naming.lookup("rmi://192.168.0.112:1098/ServidorChat");
+            chat = (ServidorChat) Naming.lookup("rmi://"+chat.ipServidor()+":1098/ServidorChat");
 
             usuario = JOptionPane.showInputDialog("Digite seu nome: ");
             user.setNome(usuario);
