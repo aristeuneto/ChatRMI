@@ -9,8 +9,6 @@ import interfaces.ServidorChat;
 import java.awt.event.KeyEvent;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import servidor.User;
 
@@ -24,7 +22,7 @@ public class ViewChat extends javax.swing.JFrame {
      * Creates new form ViewChat
      */
     static ServidorChat chat;
-    int cont;
+    static String ipServidor = "192.168.0.112";
     static User user = new User();
     static String usuario;
 
@@ -33,7 +31,7 @@ public class ViewChat extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         try {
             jtaMural.append("Seja Bem-vindo ao chat! \n\n");
-            chat = (ServidorChat) Naming.lookup("rmi://"+chat.ipServidor()+":1098/ServidorChat");
+            chat = (ServidorChat) Naming.lookup("rmi://" + ipServidor + ":1098/ServidorChat");
             chat.lerMensagem();
 
         } catch (Exception ex) {
@@ -58,7 +56,7 @@ public class ViewChat extends javax.swing.JFrame {
         jlbUsuario = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Chat");
+        setTitle("Chat!");
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jtaMural.setEditable(false);
@@ -116,7 +114,7 @@ public class ViewChat extends javax.swing.JFrame {
         try {
             chat.enviarMensagem(user.getNome() + " diz: " + jtaMensagem.getText());
         } catch (RemoteException ex) {
-            Logger.getLogger(ViewChat.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
 
         jtaMensagem.setText("");
@@ -139,31 +137,35 @@ public class ViewChat extends javax.swing.JFrame {
 
         final ServidorChat chat;
         try {
-            chat = (ServidorChat) Naming.lookup("rmi://"+chat.ipServidor()+":1098/ServidorChat");
+            chat = (ServidorChat) Naming.lookup("rmi://" + ipServidor + ":1098/ServidorChat");
 
             usuario = JOptionPane.showInputDialog("Digite seu nome: ");
             user.setNome(usuario);
             chat.setUsuario(usuario);//1
             jlbUsuario.setText("Usuário: " + usuario);
-           // JOptionPane.showMessageDialog(null, chat.getUsuarios().size());
+            // JOptionPane.showMessageDialog(null, chat.getUsuarios().size());
             Thread thread = new Thread(new Runnable() {
 
-                int cont = chat.getUsuarios().size();
                 int contLocal = 0;
 
                 @Override
                 public void run() {
+
                     while (true) {
 
-                        if (contLocal < cont) {
+                        try {
+                            if (contLocal < chat.getUsuarios().size()) {
 
-                            try {
+                                try {
 
-                                list1.add(chat.getUsuarios().get(contLocal));
-                                contLocal++;
-                            } catch (Exception ex) {
-                                Logger.getLogger(ViewChat.class.getName()).log(Level.SEVERE, null, ex);
+                                    list1.add(chat.getUsuarios().get(contLocal));
+                                    contLocal++;
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
                             }
+                        } catch (RemoteException ex) {
+                            ex.printStackTrace();
                         }
 
                     }
@@ -171,7 +173,7 @@ public class ViewChat extends javax.swing.JFrame {
             });
             thread.start();
         } catch (Exception ex) {
-            Logger.getLogger(ViewChat.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
 
     }
@@ -179,7 +181,7 @@ public class ViewChat extends javax.swing.JFrame {
     public static void lerMensagens() {
 
         try {
-            final ServidorChat chat = (ServidorChat) Naming.lookup("rmi://192.168.0.112:1098/ServidorChat");
+            final ServidorChat chat = (ServidorChat) Naming.lookup("rmi://" + ipServidor + ":1098/ServidorChat");
 
             Thread thread = new Thread(new Runnable() {
 

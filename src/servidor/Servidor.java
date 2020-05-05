@@ -16,12 +16,14 @@ import java.rmi.registry.Registry;
  */
 public class Servidor {
 
+    private String ipServidor = "192.168.0.112";
+    
     public Servidor() {
         
         try {
             Registry registry = LocateRegistry.createRegistry(1098);
             ServidorChat server = new ServidorImp();
-            Naming.rebind("rmi://"+server.ipServidor()+":1098/ServidorChat", server);
+            Naming.rebind("rmi://"+ipServidor+":1098/ServidorChat", server);
 
         } catch (Exception ex) {
             ex.printStackTrace();;

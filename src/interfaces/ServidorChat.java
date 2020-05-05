@@ -20,8 +20,7 @@ public interface ServidorChat extends Remote {
     public ArrayList<String> lerMensagem() throws RemoteException;
 
     public ArrayList<String> getUsuarios() throws RemoteException;
-    
+
     public void setUsuario(String usuario) throws RemoteException;
-    
-    public String ipServidor()throws RemoteException;
+
 }
