@@ -6,7 +6,6 @@
 package view;
 
 import interfaces.ServidorChat;
-import java.awt.PopupMenu;
 import java.awt.event.KeyEvent;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
@@ -26,21 +25,19 @@ public class ViewChat extends javax.swing.JFrame {
      */
     static ServidorChat chat;
     int cont;
-    User user = new User();
+    static User user = new User();
+    static String usuario;
 
-    // static ArrayList<String> lerMensagem = new ArrayList<String>();
     public ViewChat() {
         initComponents();
         setLocationRelativeTo(null);
         try {
             jtaMural.append("Seja Bem-vindo ao chat! \n\n");
-            chat = (ServidorChat) Naming.lookup("rmi://192.168.0.139:1098/ServidorChat");
+            chat = (ServidorChat) Naming.lookup("rmi://192.168.0.112:1098/ServidorChat");
             chat.lerMensagem();
-            String usuario = JOptionPane.showInputDialog("Digite seu nome: ");
-            user.setNome(usuario);
-            chat.usuarios().add(usuario);
 
         } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex);
             ex.printStackTrace();
         }
 
@@ -57,15 +54,20 @@ public class ViewChat extends javax.swing.JFrame {
         jbEnviar = new javax.swing.JButton();
         scrollPane1 = new java.awt.ScrollPane();
         list1 = new java.awt.List();
+        jLabel1 = new javax.swing.JLabel();
+        jlbUsuario = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Chat");
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jtaMural.setEditable(false);
         jtaMural.setColumns(20);
         jtaMural.setRows(5);
         jScrollPane1.setViewportView(jtaMural);
         jtaMural.getAccessibleContext().setAccessibleName("");
+
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(108, 31, 325, 260));
 
         jtaMensagem.setColumns(20);
         jtaMensagem.setRows(5);
@@ -76,6 +78,8 @@ public class ViewChat extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(jtaMensagem);
 
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 301, 330, 83));
+
         jbEnviar.setFont(new java.awt.Font("Tahoma", 1, 20)); // NOI18N
         jbEnviar.setForeground(new java.awt.Color(51, 255, 0));
         jbEnviar.setText("Enviar");
@@ -84,6 +88,7 @@ public class ViewChat extends javax.swing.JFrame {
                 jbEnviarActionPerformed(evt);
             }
         });
+        getContentPane().add(jbEnviar, new org.netbeans.lib.awtextra.AbsoluteConstraints(336, 301, -1, 83));
 
         list1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -92,34 +97,17 @@ public class ViewChat extends javax.swing.JFrame {
         });
         scrollPane1.add(list1);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(scrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 443, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jbEnviar, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addComponent(scrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(jbEnviar, javax.swing.GroupLayout.DEFAULT_SIZE, 83, Short.MAX_VALUE))
-                .addContainerGap())
-        );
+        getContentPane().add(scrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 27, 98, 264));
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(102, 255, 0));
+        jLabel1.setText("Usuários Online");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+
+        jlbUsuario.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jlbUsuario.setForeground(new java.awt.Color(0, 102, 255));
+        jlbUsuario.setText("Usuário");
+        getContentPane().add(jlbUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 10, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -149,47 +137,49 @@ public class ViewChat extends javax.swing.JFrame {
     }//GEN-LAST:event_jtaMensagemKeyPressed
     public static void lerUsuarios() throws RemoteException {
 
-        Thread thread = new Thread(new Runnable() {
+        final ServidorChat chat;
+        try {
+            chat = (ServidorChat) Naming.lookup("rmi://192.168.0.112:1098/ServidorChat");
 
-            int cont = chat.usuarios().size();
+            usuario = JOptionPane.showInputDialog("Digite seu nome: ");
+            user.setNome(usuario);
+            chat.setUsuario(usuario);//1
+            jlbUsuario.setText("Usuário: " + usuario);
+           // JOptionPane.showMessageDialog(null, chat.getUsuarios().size());
+            Thread thread = new Thread(new Runnable() {
 
-            @Override
-            public void run() {
-                while (true) {
+                int cont = chat.getUsuarios().size();
+                int contLocal = 0;
 
-                    try {
-                        if (chat.usuarios().size() > cont) {
+                @Override
+                public void run() {
+                    while (true) {
 
-                            list1.add(chat.usuarios().get(chat.usuarios().size() -1));
-                            cont++;
+                        if (contLocal < cont) {
+
+                            try {
+
+                                list1.add(chat.getUsuarios().get(contLocal));
+                                contLocal++;
+                            } catch (Exception ex) {
+                                Logger.getLogger(ViewChat.class.getName()).log(Level.SEVERE, null, ex);
+                            }
                         }
-                    } catch (Exception ex) {
-                        Logger.getLogger(ViewChat.class.getName()).log(Level.SEVERE, null, ex);
-                    }
 
+                    }
                 }
-            }
-        });
-        thread.start();
+            });
+            thread.start();
+        } catch (Exception ex) {
+            Logger.getLogger(ViewChat.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
-    private void list1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_list1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_list1ActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new ViewChat().setVisible(true);
-            }
-        });
+    public static void lerMensagens() {
 
         try {
-            final ServidorChat chat = (ServidorChat) Naming.lookup("rmi://192.168.0.139:1098/ServidorChat");
+            final ServidorChat chat = (ServidorChat) Naming.lookup("rmi://192.168.0.112:1098/ServidorChat");
 
             Thread thread = new Thread(new Runnable() {
 
@@ -219,10 +209,32 @@ public class ViewChat extends javax.swing.JFrame {
         }
 
     }
+
+
+    private void list1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_list1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_list1ActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new ViewChat().setVisible(true);
+            }
+        });
+
+        lerMensagens();
+
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JButton jbEnviar;
+    private static javax.swing.JLabel jlbUsuario;
     private javax.swing.JTextArea jtaMensagem;
     private static javax.swing.JTextArea jtaMural;
     private static java.awt.List list1;

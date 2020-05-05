@@ -22,6 +22,7 @@ public class ServidorImp extends UnicastRemoteObject implements ServidorChat {
     public ServidorImp() throws RemoteException {
         super();
         mensagens = new ArrayList<String>();
+        usuarios = new ArrayList<String>();
     }
 
     @Override
@@ -38,8 +39,14 @@ public class ServidorImp extends UnicastRemoteObject implements ServidorChat {
     }
 
     @Override
-    public ArrayList<String> usuarios() throws RemoteException {
-       return usuarios;
+    public ArrayList<String> getUsuarios() throws RemoteException {
+        return usuarios;
+    }
+
+    @Override
+    public void setUsuario(String usuario) throws RemoteException {
+        usuarios.add(usuario);
+
     }
 
 }

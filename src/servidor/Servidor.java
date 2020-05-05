@@ -20,7 +20,7 @@ public class Servidor {
         try {
             Registry registry = LocateRegistry.createRegistry(1098);
             ServidorChat server = new ServidorImp();
-            Naming.rebind("rmi://192.168.0.139:1098/ServidorChat", server);
+            Naming.rebind("rmi://192.168.0.112:1098/ServidorChat", server);
 
         } catch (Exception ex) {
             ex.printStackTrace();;
